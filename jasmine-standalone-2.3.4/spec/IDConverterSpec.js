@@ -11,7 +11,7 @@ describe('A suite', function() {
     id.setShard(8);
     id.setRandom(39226);
 
-    encID = converter.encodeBase32Hex(id);
+    var encID = converter.encodeBase32Hex(id);
     console.log(encID);
     expect(encID).toBe('88T3BHO802CJK');
   });
@@ -22,25 +22,21 @@ describe('A suite', function() {
     id.setShard(1);
     id.setRandom(1);
 
-    encID = converter.encodeBase32Hex(id);
+    var encID = converter.encodeBase32Hex(id);
     console.log(encID);
     expect(encID).toBe('0000008100002');
   });
   it('decode with typical values', function() {
-    converter.decodeBase32Hex('88T3BHO802CJK');
-    // var encoded = base32.encode('somethingtoencode');
-    // var id = new ID();
-
-    // id.setTimestamp(1);
-    // id.setShard(1);
-    // id.setRandom(1);
-
-    // encID = converter.encodeBase32Hex(id);
-    // console.log(encID);
-    // expect(encID).toBe('0000008100002');
+    var id = converter.decodeBase32Hex('88T3BHO802CJK');
+    expect(id.getTimestamp()).toBe(1111111111);
+    expect(id.getShard()).toBe(8);
+    expect(id.getRandom()).toBe(39226);
   });
 
-  it('decode with typical values', function() {
-    converter.decodeBase32Hex('8100002');
+  it('decode with smaller values to test padding', function() {
+    var id = converter.decodeBase32Hex('8100002');
+    expect(id.getTimestamp()).toBe(1);
+    expect(id.getShard()).toBe(1);
+    expect(id.getRandom()).toBe(1);
   });
 });

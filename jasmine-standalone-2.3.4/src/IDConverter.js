@@ -358,12 +358,32 @@ IDConverter = (function() {
 
 
   IDConverter.prototype.decodeBase32Hex = function(input) {
+    result = new ID();
     var paddedInput = IDConverter.padLeft(input, 13, '0');
     console.log(paddedInput);
     var s = IDConverter.base32HexDecode(paddedInput);
-    //var paddedString = str_pad(input,13,"0",STR_PAD_LEFT);
-    //var s = IDConverter.base32HexDecode(str_pad(input,13,"0",STR_PAD_LEFT));
-    return 'decoded';
+    var data = unpack('N*', s);
+    // since old IE does not support Object.keys and we want to be independent of any libaries like jquery
+    var dataString = '';
+    for (var i in data) {
+      if (data.hasOwnProperty(i)) {
+        dataString += data[i];
+      }
+    }
+    console.log('keys length: ' + dataString.length);
+    console.log('dataString: ' + JSON.stringify(dataString));
+    var timestamp = data['1'];
+    var shardAndRandom = data['2']
+    console.log('timestamp: ' + timestamp);
+    console.log('shardAndRandom: ' + shardAndRandom);
+    var shard = shardAndRandom >> 24;
+    var random = shardAndRandom & 0xffffff;
+    console.log('shard: ' + shard);
+    console.log('random: ' + random);
+    result.setTimestamp(timestamp);
+    result.setShard(shard);
+    result.setRandom(random);
+    return result;
   };
 
   IDConverter.prototype.encodeBase32Hex = function(input) {
@@ -417,7 +437,7 @@ IDConverter = (function() {
     }
     return result;
   }
-
+// port of Base32Hex.decode from PHP
   IDConverter.base32HexDecode = function(value) {
     console.log('inputString: ' + value);
     var alpha = IDConverter.base32HexAlphabetMap;
@@ -432,19 +452,14 @@ IDConverter = (function() {
     var newBinaryString = binaryString.slice(0, endTrimLength);
     console.log('newBinaryString: ' + newBinaryString);
     console.log('newBinaryString length: ' + newBinaryString.length);
-    // $alpha = self::$base32HexAlphabet;
-    //     $binStr = implode("", array_map(function ($key) use ($alpha) {
-    //         return $alpha[$key];
-    //     }, str_split($inputString)));
-
-    //     // remove 'stuffed' zero chars ('0') from string end to be divisable by 8
-    //     while (strlen($binStr) % 8 != 0) {
-    //         $binStr = substr($binStr, 0, -1);
-    //     }
-
-    //     return implode('', array_map(function ($str) {
-    //         return chr(bindec($str));
-    //     }, str_split($binStr, 8)));
+    var result = '';
+    var splitBinary = IDConverter.splitAtLength(newBinaryString, 8);
+    console.log(JSON.stringify(splitBinary));
+    for (var i = 0; i < splitBinary.length; i++) {
+        result += '' + IDConverter.binaryToString(splitBinary[i]);
+    }
+    console.log('result: ' + result);
+    return result;
   }
   
   // port of Base32Hex.encode from PHP
