@@ -1,11 +1,10 @@
-describe("A suite", function() {
+describe('A suite', function() {
   var converter;
 
   beforeEach(function() {
     converter = new IDConverter();
   });
-  it("contains spec with an expectation", function() {
-    var encoded = base32.encode('somethingtoencode');
+  it('encode with typical values', function() {
     var id = new ID();
 
     id.setTimestamp(1111111111);
@@ -14,10 +13,9 @@ describe("A suite", function() {
 
     encID = converter.encodeBase32Hex(id);
     console.log(encID);
-    expect(encID).toBe("88T3BHO802CJK");
+    expect(encID).toBe('88T3BHO802CJK');
   });
-  it("smaller numbers to test padding", function() {
-    var encoded = base32.encode('somethingtoencode');
+  it('encode using smaller numbers to test padding', function() {
     var id = new ID();
 
     id.setTimestamp(1);
@@ -26,9 +24,23 @@ describe("A suite", function() {
 
     encID = converter.encodeBase32Hex(id);
     console.log(encID);
-    expect(encID).toBe("0000008100002");
+    expect(encID).toBe('0000008100002');
   });
-  it("encode legacy id", function() {
-    expect(true).toBe(true);
+  it('decode with typical values', function() {
+    converter.decodeBase32Hex('88T3BHO802CJK');
+    // var encoded = base32.encode('somethingtoencode');
+    // var id = new ID();
+
+    // id.setTimestamp(1);
+    // id.setShard(1);
+    // id.setRandom(1);
+
+    // encID = converter.encodeBase32Hex(id);
+    // console.log(encID);
+    // expect(encID).toBe('0000008100002');
+  });
+
+  it('decode with typical values', function() {
+    converter.decodeBase32Hex('8100002');
   });
 });
