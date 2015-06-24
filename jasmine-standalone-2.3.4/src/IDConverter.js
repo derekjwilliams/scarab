@@ -120,9 +120,23 @@ IDConverter = (function() {
     result.setRandom(random);
     return result;
   };
+  IDConverter.prototype.toArsenalID = function(input) {
+    var shardAndRandom = 134217728 | input;
+    var binaryData = IDConverter.pack(1111111000, shardAndRandom);
+    console.log('toArsenalID result: ' + IDConverter.base32HexEncode(binaryData));
+    return IDConverter.base32HexEncode(binaryData);
+  }
+  IDConverter.prototype.toLegacyID = function(input) {
+          var paddedInput = IDConverter.padLeft(input, 13, '0');
+          var data = IDConverter.unpack(IDConverter.base32HexDecode(paddedInput));
+          return data[1] & 0xffffff;
+      };
 
   IDConverter.prototype.encodeBase32Hex = function(input) {
+    console.log('shard: ' + input.getShard() );
+    console.log('random: ' + input.getRandom() );
     var shardAndRandom = (input.getShard() << 24) | input.getRandom();
+    console.log('shardAndRandom: ' + shardAndRandom);
     var binaryData = IDConverter.pack(input.getTimestamp(), shardAndRandom);
     return IDConverter.base32HexEncode(binaryData);
   };
